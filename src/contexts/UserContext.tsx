@@ -7,9 +7,8 @@ type Props = {
 };
 
 export const UserProvider = ({ children }: Props) => {
-  const [user, setUser] = useState<IUser>({
-    username: "",
-    token: "",
+  const [user, setUser] = useState<IUser | undefined>({
+    token: ""
   });
 
   return (

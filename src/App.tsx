@@ -1,14 +1,20 @@
 // import "./App.css";
 import LoginForm from "./components/LoginForm";
-import React, { useContext } from "react";
+import { useContext } from "react";
 import { UserContext } from "./contexts/UserContext";
-import { BrowserRouter as Router, Route, Link, Switch, Redirect } from "react-router-dom";
+import { BrowserRouter as Router, Route, Switch, Redirect } from "react-router-dom";
 import NavBar from "./components/NavBar";
 import Profile from "./components/Profile";
 import Calendar from './components/Calendar';
+import Logout from './components/Logout';
+
 
 function App() {
-  const { user, setUser } = useContext(UserContext);
+  const { user } = useContext(UserContext);
+
+  console.log("Render App")
+  
+
   return (
     <Router>
       <div className="App">
@@ -20,8 +26,11 @@ function App() {
           <Route exact path="/login">
             <LoginForm />
           </Route>
+          <Route exact path="/logout">
+            <Logout />
+          </Route>
           <Route exact path="/profile">
-            {(!user || user.username==="") ? <Redirect to="/login" /> : <Profile user={user} />} 
+            {user?.token? (<Profile user={user}/> ): (<Redirect to="/login" />)} 
           </Route>
           <Route exact path="/calendar">
             <Calendar />

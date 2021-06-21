@@ -50,7 +50,7 @@ function NavBar() {
                   </Link>
 
                      
-                     {user && user.username==="" ? (<Link className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium" to='/login'>Login</Link>) : (<Link className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium" to='/logout'>Logout</Link>)}
+                     {!user?.token? (<Link className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium" to='/login'>Login</Link>) : (<Link className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium" to='/logout'>Logout</Link>)}
                 </div>
               </div>
             </div>
@@ -61,7 +61,7 @@ function NavBar() {
                   src={logo}
                   alt="FindTime!"
                 />
-                {user && user.username !== "" ? (<p className="text-gray-300 hover:bg-gray-700">Welcome{user.username}</p>) : ""}
+                {user? (<p className="text-gray-300 hover:bg-gray-700">Welcome</p>) : ""}
               </div>
             </div>
             <div className="-mr-2 flex md:hidden">
@@ -150,7 +150,7 @@ function NavBar() {
                 >
                   Calendar
                 </Link>
-                {user && user.username===""? (<Link className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium" to="/login">Login</Link>) : (<Link className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium" to="/logout">Logout</Link>)}
+                {!user?.token? (<Link className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium" to="/login">Login</Link>) : (<Link className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium" to="/logout">Logout</Link>)}
               </div>
             </div>
           )}

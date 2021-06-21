@@ -1,6 +1,6 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext } from "react";
 import {UserContext} from '../contexts/UserContext';
-import { Link, useHistory } from 'react-router-dom';
+import { Link as Button, useHistory } from 'react-router-dom';
 
 function LoginForm() {
   const [value, setValue] = React.useState({ email: "Jsnow@gmail.com", password: "I_like_snow" });
@@ -34,7 +34,8 @@ function LoginForm() {
         console.log(JSON.stringify(data));
 
         if(!data.error) {
-          setUser!({username: data.username, token: data.authToken});
+          console.log("user token " + data.authToken)
+          setUser!({token: data.authToken});
           console.log("Login Success");
           history.push("/");
         } else {
@@ -54,7 +55,7 @@ function LoginForm() {
       <input className="p-1" type="text" value={value.password} onChange={handlePasswordChange}/>
       <br />
       <div className="flex justify-end">
-        <Link to="/register" className="bg-blue-900 hover:bg-blue-700 w-1/3 self-center text-blue-50 mx-1">Register</Link>
+        <Button to="/register" className="bg-blue-900 hover:bg-blue-700 w-1/3 self-center text-blue-50 mx-1">Register</Button>
         {/* <Link to={handleLogin} className="bg-blue-900 hover:bg-blue-700 w-1/3 self-center text-blue-50 mx-1" >Login</Link> */}
 
         <a className="bg-blue-900 hover:bg-blue-700 w-1/3 self-center text-blue-50 mx-1" onClick={handleLoginWithHistory} >Login</a>
