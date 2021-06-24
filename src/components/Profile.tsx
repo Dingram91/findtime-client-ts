@@ -1,10 +1,10 @@
-import {useEffect, useState} from 'react'
+import { useEffect, useState, ReactElement } from 'react';
 
 type props = {
     user: IUser,
 }
 
-function Profile(props: props) {
+function Profile(props: props): ReactElement {
 
     const [profile, setProfile] = useState<ProfileInterface | undefined>(undefined);
 

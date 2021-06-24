@@ -1,11 +1,11 @@
-import {useState} from 'react'
+import {ReactElement, useState} from 'react'
 import {startOfWeek, lastDayOfMonth, endOfWeek, isBefore, addDays} from 'date-fns'
 
 enum MONTHS {
     January, February, March, April, May, June, July, August, September, October, November, December
 }
 
-function Calendar() {
+function Calendar() : ReactElement {
     const today = new Date();
     const [selectedYear, setSelectedYear] = useState(today.getUTCFullYear());
     const [selectedMonth, setSelectedMonth] = useState(today.getMonth());

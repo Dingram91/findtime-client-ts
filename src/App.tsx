@@ -7,6 +7,7 @@ import NavBar from "./components/NavBar";
 import Profile from "./components/Profile";
 import Calendar from './components/Calendar';
 import Logout from './components/Logout';
+import Schedule from './components/Schedule';
 
 
 function App() {
@@ -22,6 +23,7 @@ function App() {
         <Switch>
         <Route exact path="/">
             <h1>Home Page</h1>
+            <Schedule schedule={[{start: new Date(), end: new Date('6/23/21')}]}/>
           </Route>
           <Route exact path="/login">
             <LoginForm />

@@ -1,11 +1,11 @@
-import React, { useState, useContext } from "react";
+import { useState, useContext, ReactElement } from "react";
 import { Transition } from "@headlessui/react";
 
 import {UserContext } from '../contexts/UserContext';
 import { Link } from 'react-router-dom';
 import logo from '../images/findTimeLogo.png';
 
-function NavBar() {
+function NavBar(): ReactElement {
   const [isOpen, setIsOpen] = useState(false);
   let {user} = useContext(UserContext);
 

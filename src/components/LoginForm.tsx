@@ -1,8 +1,8 @@
-import React, { useContext } from "react";
+import React, { ReactElement, useContext } from "react";
 import {UserContext} from '../contexts/UserContext';
 import { Link as Button, useHistory } from 'react-router-dom';
 
-function LoginForm() {
+function LoginForm() : ReactElement {
   const [value, setValue] = React.useState({ email: "Jsnow@gmail.com", password: "I_like_snow" });
   const { setUser } = useContext(UserContext);
   const history = useHistory();
