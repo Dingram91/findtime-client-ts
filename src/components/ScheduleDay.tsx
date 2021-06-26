@@ -1,37 +1,45 @@
 import React, { ReactElement } from 'react'
 
+const MINUTES_PER_DAY = 1440; // This is the number of minutes in a day
 interface Props {
-    
+    events: {start: number, end: number, description: string}[]; // This is an array of start-end time + description objects representing time the user has something planned
 }
+// example data
+// [{start: 60*8, end: 60*17, description: "Work"}, {start: 60*18, end: 60*19, description: "Make Dinner"}]
 
-function ScheduleDay({}: Props): ReactElement {
+// TODO: Make sure events are sorted and non-overlapping
 
-    let events = [["00:00", "1:30"], ["02:30", "04:30"], ["04:30", "05:00"], ["14:30", "16:45"]]
+function ScheduleDay({events}: Props): ReactElement {
 
-    let divArray = [];
+
+    let timeDivs = [];
     for(let x=11; x < 35; x++) {
         let display = x%12 + 1
-        divArray.push(<div className="h-8 w-12 border border-b-1 border-black hover:bg-yellow-300">{display} {x<23? "am" : "pm"}</div>)
+        timeDivs.push(<div className=" w-12 border border-b-1 border-black hover:bg-yellow-300">{display} {x<23? "am" : "pm"}</div>)
     }
 
-    let eventArray = [];
-    let openEvent = false;
-    events.sort()
-    let parts = events[0][0].split(":");
-    console.log(parts[1])
-    let eventIndex = 0;
-    
+    let eventsColumn = [];
+    const DIV_STACK_HEIGHT = 36; // height of times in rem units (1.5rem = h-6 -- *24)
+    let lastEventPosition = 0;
+    for(let i = 0; i < events.length; i++) {
+        if(lastEventPosition < events[i].start) // if event doesn't start where cursor is insert a filler element
+        {
+            let remSpaceNeeded = (events[i].start - lastEventPosition) / 40; 
+            let space = ""
+            eventsColumn.push(<div className={`bg-green-200 h-${remSpaceNeeded}`}></div>)
+        } 
+    }
 
-    eventArray.push(<div className="h-1/2 w-full bg-green-300"></div>)
+
 
 
     return (
         <div className="flex">
             <div className="flex flex-col">
-                {divArray.map(x => x)}
+                {timeDivs.map(x => x)}
             </div>
             <div className="flex w-full flex-col">
-                {eventArray.map(x => x)}
+                {eventsColumn.map(x => x)}
             </div>
         </div>
     )

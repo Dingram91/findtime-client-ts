@@ -11,7 +11,7 @@ const Schedule = (props: Props) => {
             <div className="flex justify-between">
                 <div className="w-28 bg-red-300">
                     Sunday
-                    <ScheduleDay />
+                    <ScheduleDay events={[{start: 60*8, end: 60*17, description: "Work"}, {start: 60*18, end: 60*19, description: "Make Dinner"}]} />
                 </div>
                 <div className="w-28 bg-red-300">
                     Monday

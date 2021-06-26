@@ -7,6 +7,7 @@ type props = {
 function Profile(props: props): ReactElement {
 
     const [profile, setProfile] = useState<ProfileInterface | undefined>(undefined);
+    const [editMode, setEditMode] = useState(false);
 
 
     useEffect(() => {
@@ -60,23 +61,33 @@ function Profile(props: props): ReactElement {
     ]
 
     const handleUsernameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        if(profile) setProfile({ ...profile, username: event.target.value });
+        if(profile && editMode) setProfile({ ...profile, username: event.target.value });
       };
     const handleFirstNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        if(profile) setProfile({ ...profile, firstName: event.target.value });
+        if(profile && editMode) setProfile({ ...profile, firstName: event.target.value });
       };
       const handleLastNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        if(profile) setProfile({ ...profile, lastName: event.target.value });
+        if(profile && editMode) setProfile({ ...profile, lastName: event.target.value });
       };
       const handleProfilePicChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        if(profile) setProfile({ ...profile, thumbNail: event.target.value });
+        if(profile && editMode) setProfile({ ...profile, thumbNail: event.target.value });
       };
       const handleTimeZoneChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         
         // if(profile) setProfile({ ...profile, timeZone: event.target.value });
       };
 
-    const inputStyle = "w-1/2 bg-pink-200 p-1 focus:bg-pink-300"
+      const handleSubmit = () => {
+        console.log("Submitted form!")
+      }
+
+
+    let enterEditMode = () => {
+      setEditMode(!editMode);
+    }
+
+    let inputStyle = "w-1/2 p-1 focus:bg-pink-400"
+    inputStyle += (editMode)? " bg-pink-300" : " bg-pink-200" 
     const inputStyleDisabled = "w-1/2 bg-pink-200 p-1"
     const labelStyle = "w-1/2 bg-pink-200 p-1 focus"
 
@@ -85,22 +96,26 @@ function Profile(props: props): ReactElement {
             <div className="flex flex-col w-1/2 bg-green-100">
                 <h1 className="col-span-2 self-center  pb-1">Welcome to your Profile!</h1>
                 <div className="flex border border-black pb-1">
-                    <label className={labelStyle}>username:</label>
+                    <label className={labelStyle} >username:</label>
                     {/* <label className={inputStyle}>{profile?.username}</label> */}
                     <input className={inputStyle} onChange={handleUsernameChange} type="text" value={profile? profile.username : ""} />
                 </div>
                 <div className="flex border border-black pb-1">
                     <label className={labelStyle}>first name:</label>
-                    <input className={inputStyle} onChange={handleFirstNameChange} type="text" value={profile? profile.firstName : ""} />                </div>
+                    <input className={inputStyle} onChange={handleFirstNameChange} type="text" value={profile? profile.firstName : ""} />                
+                </div>
                 <div className="flex border border-black pb-1">
                     <label className={labelStyle}>last Name:</label>
-                    <input className={inputStyle} onChange={handleLastNameChange} type="text" value={profile? profile.lastName : ""} />                </div>
+                    <input className={inputStyle} onChange={handleLastNameChange} type="text" value={profile? profile.lastName : ""} />                
+                </div>
                 <div className="flex border border-black pb-1">
                     <label className={labelStyle}>joined:</label>
-                    <input className={inputStyleDisabled} readOnly type="text" value={profile? profile.joined.toString() : ""} />                </div>
+                    <input className={inputStyleDisabled} readOnly type="text" value={profile? profile.joined.toString() : ""} />                
+                </div>
                 <div className="flex border border-black pb-1">
                     <label className={labelStyle}>profile picture</label>
-                    <input className={inputStyle} onChange={handleProfilePicChange} type="text" value={profile? profile.thumbNail : ""} />                </div>
+                    <input className={inputStyle} onChange={handleProfilePicChange} type="text" value={profile? profile.thumbNail : ""} />               
+                </div>
                 <div className="flex border border-black pb-1">
                     <label className={labelStyle}>Time Zone:</label>
                     {/* <input className={labelStyle} onChange={handleTimeZoneChange} type="text" value={profile? profile.timeZone : ""} />                </div> */}
@@ -110,13 +125,20 @@ function Profile(props: props): ReactElement {
                 </div>
                 <div className="flex border border-black pb-1">
                     <label className={labelStyle}>invited:</label>
-                    <input className={inputStyleDisabled} readOnly type="text" value={profile? profile.invited : ""} />                </div>
+                    <input className={inputStyleDisabled} readOnly type="text" value={profile? profile.invited : ""} />                
+                </div>
                 <div className="flex border border-black pb-1">
                     <label className={labelStyle}>attending:</label>
-                    <input className={inputStyleDisabled} readOnly type="text" value={profile? profile.attending : ""} />                </div>
+                    <input className={inputStyleDisabled} readOnly type="text" value={profile? profile.attending : ""} />                
+                </div>
                 <div className="flex border border-black">
                     <label className={labelStyle}>default schedule:</label>
-                    <input className={inputStyleDisabled} readOnly type="text" value={profile? profile.defaultSchedule.toString() : ""} />                </div>
+                    <input className={inputStyleDisabled} readOnly type="text" value={profile? profile.defaultSchedule.toString() : ""} />                
+                </div>
+                <div className="flex justify-between">
+                  <button onClick={enterEditMode} className="border border-black rounded-md w-16 hover:bg-blue-300 bg-blue-100">Edit</button>
+                  {editMode? <button onClick={handleSubmit} className="border border-black rounded-md w-16 hover:bg-blue-300 bg-blue-100">Submit</button>: "" }
+                </div>
             </div>
         </div>
     )
