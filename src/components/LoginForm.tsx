@@ -1,8 +1,32 @@
 import React, { ReactElement, useContext } from "react";
 import {UserContext} from '../contexts/UserContext';
-import { Link as Button, useHistory } from 'react-router-dom';
+import {useHistory } from 'react-router-dom';
+import { Avatar, Button, Checkbox, Container, CssBaseline, FormControlLabel, Grid, Link, makeStyles, TextField } from "@material-ui/core";
+import Typography from '@material-ui/core/Typography';
+import AvTimerTwoToneIcon from '@material-ui/icons/AvTimerTwoTone';
+
+const useStyles = makeStyles((theme) => ({
+  paper: {
+    marginTop: theme.spacing(8),
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
+  avatar: {
+    margin: theme.spacing(1),
+    backgroundColor: theme.palette.secondary.main,
+  },
+  form: {
+    width: '100%', // Fix IE 11 issue.
+    marginTop: theme.spacing(1),
+  },
+  submit: {
+    margin: theme.spacing(3, 0, 2),
+  },
+}));
 
 function LoginForm() : ReactElement {
+  const classes = useStyles();
   const [value, setValue] = React.useState({ email: "Jsnow@gmail.com", password: "I_like_snow" });
   const { setUser } = useContext(UserContext);
   const history = useHistory();
@@ -47,22 +71,70 @@ function LoginForm() : ReactElement {
   }
 
   return (
-  <div className="min-h-screen bg-blue-100 flex flex-col justify-center items-center">
-    <div className="flex flex-col border-black">
-      <label className="p-1">Email address</label>
-      <input className="p-1" type="text" value={value.email} onChange={handleEmailChange}/>
-      <label className="p-1">password</label>
-      <input className="p-1" type="text" value={value.password} onChange={handlePasswordChange}/>
-      <br />
-      <div className="flex justify-end">
-        <Button to="/register" className="bg-blue-900 hover:bg-blue-700 w-1/3 self-center text-blue-50 mx-1">Register</Button>
-        {/* <Link to={handleLogin} className="bg-blue-900 hover:bg-blue-700 w-1/3 self-center text-blue-50 mx-1" >Login</Link> */}
-
-        <a className="bg-blue-900 hover:bg-blue-700 w-1/3 self-center text-blue-50 mx-1" onClick={handleLoginWithHistory} >Login</a>
-
-      </div>
+    <Container component="main" maxWidth="xs">
+    <CssBaseline />
+    <div className={classes.paper}>
+      <Avatar className={classes.avatar}>
+        <AvTimerTwoToneIcon />
+      </Avatar>
+      <Typography component="h1" variant="h5">
+        Sign in
+      </Typography>
+      <form className={classes.form} onSubmit={handleLoginWithHistory} noValidate>
+        <TextField
+          variant="outlined"
+          margin="normal"
+          required
+          fullWidth
+          id="email"
+          label={value.email? null : "Email Address"}
+          value={value.email}
+          name="email"
+          autoComplete="email"
+          autoFocus
+          onChange={handleEmailChange}
+        />
+        <TextField
+          variant="outlined"
+          margin="normal"
+          required
+          fullWidth
+          name="password"
+          label={value.password? null : "password"}
+          value={value.password}
+          type="password"
+          id="password"
+          autoComplete="current-password"
+          onChange={handlePasswordChange}
+        />
+        <FormControlLabel
+          control={<Checkbox value="remember" color="primary" />}
+          label="Remember me"
+        />
+        <Button
+          type="submit"
+          fullWidth
+          variant="contained"
+          color="primary"
+          className={classes.submit}
+        >
+          Sign In
+        </Button>
+        <Grid container>
+          <Grid item xs>
+            <Link href="#" variant="body2">
+              Forgot password?
+            </Link>
+          </Grid>
+          <Grid item>
+            <Link href="#" variant="body2" onClick={() => history.push('/register')} >
+              {"Don't have an account? Sign Up"}
+            </Link>
+          </Grid>
+        </Grid>
+      </form>
     </div>
-  </div>
+  </Container>
 
   
   );

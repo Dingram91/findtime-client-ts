@@ -1,4 +1,5 @@
 import { useEffect, useState, ReactElement } from 'react';
+import { Button } from '@material-ui/core';
 
 type props = {
     user: IUser,
@@ -136,7 +137,8 @@ function Profile(props: props): ReactElement {
                     <input className={inputStyleDisabled} readOnly type="text" value={profile? profile.defaultSchedule.toString() : ""} />                
                 </div>
                 <div className="flex justify-between">
-                  <button onClick={enterEditMode} className="border border-black rounded-md w-16 hover:bg-blue-300 bg-blue-100">Edit</button>
+                <Button variant="contained" color="primary">Hello World</Button>
+                  {/* <button onClick={enterEditMode} className="border border-black rounded-md w-16 hover:bg-blue-300 bg-blue-100">Edit</button> */}
                   {editMode? <button onClick={handleSubmit} className="border border-black rounded-md w-16 hover:bg-blue-300 bg-blue-100">Submit</button>: "" }
                 </div>
             </div>
