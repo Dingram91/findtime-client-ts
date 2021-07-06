@@ -15,7 +15,7 @@ const useStyles = makeStyles((theme: Theme) =>
       textDecoration: 'none',
       borderRadius:"5px",
       '&:hover': {
-        backgroundColor: '#c8d5e8'
+        backgroundColor: 'rgba(13, 20, 222, 0.2)'
       }
     },
   })

@@ -4,12 +4,12 @@ import './index.css';
 import App from './App';
 import { UserProvider } from "./contexts/UserContext";
 
-
 ReactDOM.render(
-  <React.StrictMode>
-    <UserProvider>
-    <App />
-    </UserProvider>
-  </React.StrictMode>,
+  // <React.StrictMode>
+      <UserProvider>
+      <App />
+      </UserProvider>
+  // </React.StrictMode>
+  ,
   document.getElementById('root')
 );

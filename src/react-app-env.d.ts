@@ -2,6 +2,7 @@
 
 interface IUser {
   token: string;
+  refresh: string;
 }
 
 type UserContextType = {
@@ -33,7 +34,7 @@ interface ProfileInterface {
   lastName: string;
   thumbNail: string;
   joined: Date;
-  timeZone: TIMEZONE;
+  timeZone: string;
   attending: string[];
   invited: string[];
   defaultSchedule: { start: Date; end: Date }[];

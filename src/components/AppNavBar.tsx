@@ -9,6 +9,7 @@ import AccountCircle from '@material-ui/icons/AccountCircle';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import { useHistory } from 'react-router-dom';
+import { FormControlLabel, Switch } from '@material-ui/core';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -24,12 +25,13 @@ const useStyles = makeStyles((theme: Theme) =>
     },
   }),
 );
-
 interface Props {
-  drawerOpenCloseHook: () => void
+  drawerOpenCloseHook: () => void,
+  darkMode: boolean,
+  toggleDarkMode: () => void
 }
 
-export default function AppNavBar({drawerOpenCloseHook: toggleDrawer}: Props) {
+export default function AppNavBar({drawerOpenCloseHook: toggleDrawer, darkMode, toggleDarkMode}: Props) {
   const classes = useStyles();
   const [auth] = React.useState(true);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -82,6 +84,19 @@ export default function AppNavBar({drawerOpenCloseHook: toggleDrawer}: Props) {
                 onClose={handleClose}
               >
                 <MenuItem onClick={() => history.push('/profile')}>Profile</MenuItem>
+                <MenuItem>
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={darkMode}
+                        onChange={toggleDarkMode}
+                        name="darkMode"
+                        color="primary"
+                      />
+                    }
+                    label="Dark Mode"
+                  />
+                </MenuItem>
               </Menu>
             </div>
           )}

@@ -55,11 +55,11 @@ function LoginForm() : ReactElement {
       .then((response) => response.json())
       .then((data) => {
         // JSON data from response
-        console.log(JSON.stringify(data));
 
         if(!data.error) {
+          console.log("Refresh token = " + data.refreshToken);
           console.log("user token " + data.authToken)
-          setUser!({token: data.authToken});
+          setUser!({token: data.authToken, refresh: data.refreshToken});
           console.log("Login Success");
           history.push("/");
         } else {
