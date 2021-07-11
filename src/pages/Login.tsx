@@ -42,7 +42,7 @@ function LoginForm() : ReactElement {
   const handleLoginWithHistory = async (event: React.SyntheticEvent) => {
     event.preventDefault();
 
-    fetch("http://localhost:3000/api/user/login", {
+    fetch("http://192.168.1.101:3000/api/user/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

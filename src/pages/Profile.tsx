@@ -1,6 +1,6 @@
 import { useEffect, useState, ReactElement, useContext } from 'react';
 import { Button, Container, Grid, makeStyles, MenuItem, Paper, Select, TextField, Typography } from '@material-ui/core';
-import useProfile from '../utils/useProfile';
+import useProfile from '../utils/CustomHooks/useProfile';
 import { UserContext } from '../contexts/UserContext';
 
 type props = {
@@ -71,7 +71,15 @@ function Profile(props: props): ReactElement {
         if(profile && editMode) setProfile({ ...profile, lastName: event.target.value });
       };
       const handleProfilePicChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        if(profile && editMode) setProfile({ ...profile, thumbNail: event.target.value });
+        if(event.target.files){
+          const reader = new FileReader();
+          reader.readAsDataURL(event.target.files[0])
+          reader.onload = (e) => {
+            console.log("Image Data: ", e?.target?.result)
+            const image = e?.target?.result as string;
+            if(profile) setProfile({ ...profile, thumbNail: image });
+          }
+        }
       };
       const handleTimeZoneChange = (event: React.ChangeEvent<{ value: unknown}>) => {
         
@@ -79,7 +87,24 @@ function Profile(props: props): ReactElement {
       };
 
       const handleSubmit = () => {
-        console.log("Submitted form!")
+        // upload our image first
+        fetch("http://localhost:3000/api/profile/upload", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          authToken: user!.token,
+        },
+        body: JSON.stringify({
+          data: profile?.thumbNail,
+          contentType: "image/JPG"
+        })
+      })
+      .then(response => response.json())
+      .then(data => {
+        console.log("Response to image upload:");
+        console.dir(data);
+      })
+      .catch(err => { console.log("Unable to upload image: ", err.message)})
       }
 
 
@@ -124,12 +149,25 @@ function Profile(props: props): ReactElement {
                   <Grid item xs={6}>
                     <TextField value={profile?.joined} disabled />
                   </Grid>
-                  {/* Item 5 */}
+                  {/* Profile Picture */}
+
+
+
                   <Grid item xs={6}>
                     <Typography component="h3" variant="h6" align="center" >Profile Picture</Typography>
                   </Grid>
                   <Grid item xs={6}>
-                    <TextField value={profile?.thumbNail} disabled={!editMode} onChange={handleProfilePicChange} />
+                    <Button
+                      variant="contained"
+                      component="label"
+                    >
+                      Upload File
+                      <input
+                        type="file"
+                        hidden
+                        onChange={handleProfilePicChange}
+                      />
+                    </Button>
                   </Grid>
                   {/* Item 6 */}
                   <Grid item xs={6}>
@@ -157,7 +195,7 @@ function Profile(props: props): ReactElement {
                       <Button onClick={enterEditMode}>Edit</Button>
                     </Grid>
                     <Grid item xs={3} justify="center">
-                      <Button disabled={!editMode}>Submit</Button>
+                      <Button disabled={!editMode} onClick={handleSubmit} >Submit</Button>
                     </Grid>
                   </Grid>
                     

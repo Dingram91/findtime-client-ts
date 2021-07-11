@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -46,9 +46,65 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+type UserInformation = {
+  email: string;
+  password: string;
+
+}
+
 export default function SignUp() {
   const classes = useStyles();
   const history = useHistory();
+  const [userInfo, setUserInfo] =  useState<UserInformation>({
+    email: "",
+    password: ""
+  });
+  const [error, setError] = useState({
+    emailError: null,
+    passwordError: null,
+  });
+
+  const submitForm = async () => {
+
+    let errors = {
+      emailError:null,
+      passwordError: null,
+    }
+
+    console.dir(error)
+
+    fetch("http://localhost:3000/api/user/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: userInfo.email,
+          password: userInfo.password
+        })
+      })
+      .then(response => {return response.json()})
+      .then(data => {
+        if(data.error) {
+          if(data.error.includes("Email"))
+            errors.emailError = data.error
+            // setError({...error, emailError: data.error})
+          if(data.error.includes("password"))
+            errors.passwordError = data.error
+        }
+        setError(errors);
+        // if no errors then making user was successful and we redirect to login 
+        if(!errors.emailError && !errors.passwordError) {
+          history.push('/login')
+        }
+        }
+      )
+        .catch(e => {
+          alert("Unable to create user at this time");
+          console.log(e);
+        });
+      
+      };
 
   return (
     <Container component="main" maxWidth="xs">
@@ -62,11 +118,13 @@ export default function SignUp() {
         </Typography>
         <form className={classes.form} noValidate>
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
+            {/* <Grid item xs={12} sm={6}>
               <TextField
                 autoComplete="fname"
                 name="firstName"
                 variant="outlined"
+                value={userInfo.firstName}
+                onChange={(e) => setUserInfo({...userInfo, firstName: e.target.value}) }
                 required
                 fullWidth
                 id="firstName"
@@ -83,8 +141,10 @@ export default function SignUp() {
                 label="Last Name"
                 name="lastName"
                 autoComplete="lname"
+                value={userInfo.lastName}
+                onChange={(e) => setUserInfo({...userInfo, lastName: e.target.value}) }
               />
-            </Grid>
+            </Grid> */}
             <Grid item xs={12}>
               <TextField
                 variant="outlined"
@@ -94,6 +154,10 @@ export default function SignUp() {
                 label="Email Address"
                 name="email"
                 autoComplete="email"
+                error={error.emailError != null}
+                helperText={error.emailError}
+                value={userInfo.email}
+                onChange={(e) => setUserInfo({...userInfo, email: e.target.value}) }
               />
             </Grid>
             <Grid item xs={12}>
@@ -106,15 +170,19 @@ export default function SignUp() {
                 type="password"
                 id="password"
                 autoComplete="current-password"
+                error={error.passwordError != null}
+                helperText={error.passwordError}
+                value={userInfo.password}
+                onChange={(e) => setUserInfo({...userInfo, password: e.target.value}) }
               />
             </Grid>
           </Grid>
           <Button
-            type="submit"
             fullWidth
             variant="contained"
             color="primary"
             className={classes.submit}
+            onClick={submitForm}
           >
             Sign Up
           </Button>

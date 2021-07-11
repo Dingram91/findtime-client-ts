@@ -2,7 +2,7 @@
 import LoginForm from "./pages/Login";
 import { useContext, useState} from "react";
 import { UserContext } from "./contexts/UserContext";
-import { BrowserRouter as Router, Route, Switch, Redirect } from "react-router-dom";
+import { BrowserRouter as Router, Route, Switch, Redirect, useHistory } from 'react-router-dom';
 // import NavBar from "./components/NavBar";
 import Profile from "./pages/Profile";
 import Calendar from './components/Calendar';
@@ -10,22 +10,23 @@ import Logout from './components/Logout';
 import Schedule from './components/Schedule';
 import AppNavBar from './components/AppNavBar'
 import AppDrawer from "./components/AppDrawer";
-import { createStyles, makeStyles, Theme, ThemeProvider, createMuiTheme } from '@material-ui/core/styles';
+import { ThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import SignUp from "./pages/SignUp";
 import { CssBaseline } from "@material-ui/core";
+import Upload from "./pages/Upload";
 
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
+// const useStyles = makeStyles((theme: Theme) =>
+//   createStyles({
+//     root: {
 
-    }
-  })
-  )
+//     }
+//   })
+//   )
 
 
 function App() {
-  const classes = useStyles();
+  // const classes = useStyles();
   const { user } = useContext(UserContext);
   const [drawerState, setDrawerState] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
@@ -71,6 +72,9 @@ function App() {
           </Route>
           <Route exact path="/calendar">
             <Calendar />
+          </Route>
+          <Route exact path="/upload">
+            <Upload />
           </Route>
         </Switch>
         </ThemeProvider>
