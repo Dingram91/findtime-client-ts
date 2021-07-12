@@ -1,0 +1,5 @@
+{
+    "prettier.jsxBracketSameLine": true,
+    "typescript.preferences.quoteStyle": "single",
+    "editor.formatOnSave": true
+}

@@ -1,4 +1,5 @@
-import React, { ReactElement, useState } from 'react'
+import React, { ReactElement, useContext, useState } from 'react'
+import { UserContext } from '../contexts/UserContext';
 
 interface Props {
     
@@ -7,6 +8,7 @@ interface Props {
 function Upload({}: Props): ReactElement {
 
     const [imageData, setImageData] = useState<File>();
+    const { user } = useContext(UserContext);
 
     const imageChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
         if(event.target.files) {
@@ -24,6 +26,9 @@ function Upload({}: Props): ReactElement {
 
         fetch('http://localhost:3000/upload', {
             method: 'POST',
+            headers: {
+                'authToken': user!.token
+            },
             body: data
         })
         .then((result) => {
