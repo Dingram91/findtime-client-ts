@@ -5,9 +5,16 @@ interface IUser {
     refresh: string
 }
 
+interface INameAndImage {
+    userName: string
+    avatarImage: string
+}
+
 type UserContextType = {
     user: IUser | undefined
     setUser: (user: IUser | undefined) => void
+    nameAndImage: INameAndImage | undefined
+    setNameAndImage: (nameAndImage: INameAndImage | undefined) => void
 }
 interface ProfileInterface {
     username: string

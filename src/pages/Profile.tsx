@@ -15,6 +15,7 @@ import useProfile from '../utils/CustomHooks/useProfile'
 import { UserContext } from '../contexts/UserContext'
 import { getToken } from '../utils/TokenUtils'
 import Resizer from 'react-image-file-resizer'
+import AvatarImage from '../components/AvatarImage'
 
 type props = {}
 
@@ -30,15 +31,7 @@ const useStyles = makeStyles((theme) => ({
         margin: theme.spacing(1),
         backgroundColor: theme.palette.secondary.main,
     },
-    image: {
-        // width: '100px',
-        // height: '100px',
-    },
-    disabled: {
-        backgroundColor: 'pink',
-    },
     form: {
-        // backgroundColor: "lightblue",
         width: '100%', // Fix IE 11 issue.
         marginTop: theme.spacing(3),
     },
@@ -49,35 +42,15 @@ const useStyles = makeStyles((theme) => ({
         padding: '2%',
         margin: '2%',
     },
-
-    debug: {
-        backgroundColor: 'red',
-    },
 }))
 
 function Profile(props: props): ReactElement {
     const classes = useStyles()
     const [editMode, setEditMode] = useState(false)
-    const [imageUrl, setImageUrl] = useState<string>()
+    const [newImage, setNewImage] = useState<File>()
     const { user, setUser } = useContext(UserContext)
 
     const { profile, setProfile, isPending, error } = useProfile()
-
-    useEffect(() => {
-        if (profile?.thumbNail && user && setUser) {
-            console.log('Trying to set image')
-            fetch('http://localhost:3000/files/' + profile.thumbNail, {
-                method: 'GET',
-                headers: {
-                    authToken: getToken(user, setUser),
-                },
-            })
-                .then((response) => response.blob())
-                .then((blob) => {
-                    setImageUrl(URL.createObjectURL(blob))
-                })
-        }
-    }, [profile?.thumbNail])
 
     const TIMEZONES = [
         'AST',
@@ -115,18 +88,18 @@ function Profile(props: props): ReactElement {
         if (profile && editMode)
             setProfile({ ...profile, lastName: event.target.value })
     }
-    const handleProfilePicChange = async (
+    const handleProfilePicChange = (
         event: React.ChangeEvent<HTMLInputElement>
     ) => {
         if (event.target.files) {
             console.log('Uploading image')
             if (profile) {
-                const userImage = await uploadImage(event.target.files[0])
-                console.log('Uploaded user image named: ' + userImage)
-                setProfile({
-                    ...profile,
-                    thumbNail: userImage,
-                })
+                setNewImage(event.target.files[0])
+                // const userImage = await uploadImage(event.target.files[0])
+                // setProfile({
+                //     ...profile,
+                //     thumbNail: userImage,
+                // })
             }
         }
     }
@@ -191,8 +164,15 @@ function Profile(props: props): ReactElement {
     }
 
     const handleSubmit = async () => {
-        console.log('User thumbnail: ' + profile?.thumbNail)
         if (profile && user && setUser) {
+            // upload image if there is a new one
+            if (newImage) {
+                console.log('New image')
+                const fileName = await uploadImage(newImage)
+                console.log('New image named: ' + fileName)
+                setProfile({ ...profile, thumbNail: fileName })
+            }
+
             fetch('http://localhost:3000/api/profile/edit', {
                 method: 'POST',
                 headers: {
@@ -230,18 +210,7 @@ function Profile(props: props): ReactElement {
             <Paper elevation={5} className={classes.frame}>
                 <form>
                     <Grid container justify="center">
-                        <Avatar src={imageUrl} alt="user Image" />
-                        <Grid container item xs={12} justify="center">
-                            <Grid item>
-                                <img
-                                    src={imageUrl}
-                                    alt="Profile Image"
-                                    className={classes.image}
-                                />
-                            </Grid>
-                        </Grid>
                         {/* Profile Picture */}
-
                         <Grid item xs={6}>
                             <Typography
                                 component="h3"
@@ -251,7 +220,7 @@ function Profile(props: props): ReactElement {
                                 Profile Picture
                             </Typography>
                         </Grid>
-                        <Grid item xs={6}>
+                        <Grid item xs={3}>
                             <Button
                                 variant="contained"
                                 component="label"
@@ -264,6 +233,12 @@ function Profile(props: props): ReactElement {
                                     onChange={handleProfilePicChange}
                                 />
                             </Button>
+                        </Grid>
+                        <Grid item container xs={3} justify="center">
+                            <AvatarImage
+                                imageName={profile?.thumbNail}
+                                alt="Avatar Image"
+                            />
                         </Grid>
                         <Grid item xs={6}>
                             <Typography
@@ -279,8 +254,6 @@ function Profile(props: props): ReactElement {
                                 value={profile?.username}
                                 disabled={!editMode}
                                 onChange={handleUsernameChange}
-                                error={false}
-                                helperText="Incorrect Username"
                             />
                         </Grid>
                         {/* Item 2 */}

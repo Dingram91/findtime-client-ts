@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken'
 
 export const checkIfSessionExpired = (user: IUser) => {
-    if (user.token && jwt.decode(user.token)) {
+    if (user && user.token && jwt.decode(user.token)) {
         const decoded = jwt.decode(user.token) as jwt.JwtPayload
         if (decoded && decoded?.exp) {
             const expiration = decoded.exp

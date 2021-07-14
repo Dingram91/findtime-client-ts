@@ -1,7 +1,7 @@
 import React, { ReactElement, useContext, useEffect, useState } from 'react'
 import { UserContext } from '../contexts/UserContext'
 import { getToken } from '../utils/TokenUtils'
-
+import { Avatar } from '@material-ui/core'
 interface Props {
     imageName: string | undefined
     alt?: string
@@ -31,7 +31,7 @@ function AvatarImage({ imageName, alt }: Props): ReactElement {
         }
     }, [imageName])
 
-    return <img src={imageUrl} alt={alt} />
+    return <Avatar src={imageUrl} alt={alt} />
 }
 
 export default AvatarImage

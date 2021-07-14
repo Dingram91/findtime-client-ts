@@ -3,7 +3,7 @@ import { UserContext } from '../../contexts/UserContext'
 import { refreshSession, checkIfSessionExpired } from '../TokenUtils'
 
 const useProfile = () => {
-    const { user, setUser } = useContext(UserContext)
+    const { user, setUser, setNameAndImage } = useContext(UserContext)
 
     const [isPending, setIsPending] = useState(true)
     const [error, setError] = useState(null)
@@ -32,6 +32,7 @@ const useProfile = () => {
                             setIsPending(false)
                             setError(null)
                             setUser!(undefined)
+                            setNameAndImage!(undefined)
                         })
                         .catch((err) => {
                             setIsPending(false)
