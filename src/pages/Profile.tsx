@@ -1,5 +1,6 @@
-import { useEffect, useState, ReactElement, useContext } from 'react'
+import { useState, ReactElement, useContext, useEffect } from 'react'
 import {
+    Avatar,
     Button,
     Container,
     Grid,
@@ -12,6 +13,8 @@ import {
 } from '@material-ui/core'
 import useProfile from '../utils/CustomHooks/useProfile'
 import { UserContext } from '../contexts/UserContext'
+import { getToken } from '../utils/TokenUtils'
+import Resizer from 'react-image-file-resizer'
 
 type props = {}
 
@@ -26,6 +29,13 @@ const useStyles = makeStyles((theme) => ({
     avatar: {
         margin: theme.spacing(1),
         backgroundColor: theme.palette.secondary.main,
+    },
+    image: {
+        // width: '100px',
+        // height: '100px',
+    },
+    disabled: {
+        backgroundColor: 'pink',
     },
     form: {
         // backgroundColor: "lightblue",
@@ -48,9 +58,26 @@ const useStyles = makeStyles((theme) => ({
 function Profile(props: props): ReactElement {
     const classes = useStyles()
     const [editMode, setEditMode] = useState(false)
+    const [imageUrl, setImageUrl] = useState<string>()
     const { user, setUser } = useContext(UserContext)
 
     const { profile, setProfile, isPending, error } = useProfile()
+
+    useEffect(() => {
+        if (profile?.thumbNail && user && setUser) {
+            console.log('Trying to set image')
+            fetch('http://localhost:3000/files/' + profile.thumbNail, {
+                method: 'GET',
+                headers: {
+                    authToken: getToken(user, setUser),
+                },
+            })
+                .then((response) => response.blob())
+                .then((blob) => {
+                    setImageUrl(URL.createObjectURL(blob))
+                })
+        }
+    }, [profile?.thumbNail])
 
     const TIMEZONES = [
         'AST',
@@ -88,12 +115,18 @@ function Profile(props: props): ReactElement {
         if (profile && editMode)
             setProfile({ ...profile, lastName: event.target.value })
     }
-    const handleProfilePicChange = (
+    const handleProfilePicChange = async (
         event: React.ChangeEvent<HTMLInputElement>
     ) => {
         if (event.target.files) {
+            console.log('Uploading image')
             if (profile) {
-                setProfile({ ...profile, thumbNail: event.target.files[0] })
+                const userImage = await uploadImage(event.target.files[0])
+                console.log('Uploaded user image named: ' + userImage)
+                setProfile({
+                    ...profile,
+                    thumbNail: userImage,
+                })
             }
         }
     }
@@ -104,66 +137,134 @@ function Profile(props: props): ReactElement {
             setProfile({ ...profile, timeZone: event.target.value as string })
     }
 
-    const uploadImage = () => {
-        const data = new FormData()
-        data.append('image', profile?.thumbNail!)
-
-        fetch('http://localhost:3000/upload', {
-            method: 'POST',
-            body: data,
+    const resizeFile = (file: File): Promise<Blob> =>
+        new Promise<Blob>((resolve) => {
+            Resizer.imageFileResizer(
+                file,
+                300,
+                300,
+                'JPEG',
+                100,
+                0,
+                (uri) => {
+                    const b: Blob = uri as Blob
+                    resolve(b)
+                },
+                'blob'
+            )
         })
-            .then((response) => {
-                return response.json()
-            })
-            .then((json) => {
-                return json.imageUrl
-            })
-            .catch((err) => {
-                console.log(err)
-            })
+
+    const uploadImage = async (image: File) => {
+        let fileName: string = ''
+        try {
+            const resizedImage = await resizeFile(image)
+            console.log(resizedImage)
+            const data = new FormData()
+            data.append('image', resizedImage)
+
+            if (user && setUser) {
+                console.log('user and ')
+                await fetch('http://localhost:3000/files/upload', {
+                    method: 'POST',
+                    headers: {
+                        authToken: getToken(user, setUser),
+                    },
+                    body: data,
+                })
+                    .then((response) => {
+                        console.log(response)
+                        return response.json()
+                    })
+                    .then((json) => {
+                        console.dir(json)
+                        fileName = json.fileName
+                        console.dir('filename: ' + fileName)
+                    })
+                    .catch((err) => {
+                        console.log(err)
+                    })
+            }
+            console.log('Upload url: ' + fileName)
+        } catch (err) {}
+
+        return fileName
     }
 
-    const handleSubmit = () => {
-        // upload our image first
-        if (profile?.thumbNail) {
-            const imageUrl = uploadImage()
+    const handleSubmit = async () => {
+        console.log('User thumbnail: ' + profile?.thumbNail)
+        if (profile && user && setUser) {
+            fetch('http://localhost:3000/api/profile/edit', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    authToken: getToken(user, setUser),
+                },
+                body: JSON.stringify({
+                    username: profile.username,
+                    firstName: profile.firstName,
+                    lastName: profile.lastName,
+                    thumbNail: profile.thumbNail,
+                    timeZone: profile.timeZone,
+                }),
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.error) {
+                        console.log(data.error)
+                    } else {
+                        console.dir(data.message)
+                    }
+                })
+                .catch((err) => {
+                    console.log('Unable to submit edit: ', err.message)
+                })
         }
-
-        fetch('http://localhost:3000/api/profile/upload', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                authToken: user!.token,
-            },
-            body: JSON.stringify({
-                data: profile?.thumbNail,
-                contentType: 'image/JPG',
-            }),
-        })
-            .then((response) => response.json())
-            .then((data) => {
-                console.log('Response to image upload:')
-                console.dir(data)
-            })
-            .catch((err) => {
-                console.log('Unable to upload image: ', err.message)
-            })
     }
 
     let enterEditMode = () => {
         setEditMode(!editMode)
     }
 
-    let inputStyle = 'w-1/2 p-1 focus:bg-pink-400'
-    inputStyle += editMode ? ' bg-pink-300' : ' bg-pink-200'
-    const inputStyleDisabled = 'w-1/2 bg-pink-200 p-1'
-    const labelStyle = 'w-1/2 bg-pink-200 p-1 focus'
-
     return (
         <Container component="main" maxWidth="sm">
             <Paper elevation={5} className={classes.frame}>
-                <form key={124124}>
-                    <Grid key={12365267} container>
+                <form>
+                    <Grid container justify="center">
+                        <Avatar src={imageUrl} alt="user Image" />
+                        <Grid container item xs={12} justify="center">
+                            <Grid item>
+                                <img
+                                    src={imageUrl}
+                                    alt="Profile Image"
+                                    className={classes.image}
+                                />
+                            </Grid>
+                        </Grid>
+                        {/* Profile Picture */}
+
+                        <Grid item xs={6}>
+                            <Typography
+                                component="h3"
+                                variant="h6"
+                                align="center"
+                            >
+                                Profile Picture
+                            </Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                            <Button
+                                variant="contained"
+                                component="label"
+                                disabled={!editMode}
+                            >
+                                Upload File
+                                <input
+                                    type="file"
+                                    hidden
+                                    onChange={handleProfilePicChange}
+                                />
+                            </Button>
+                        </Grid>
                         <Grid item xs={6}>
                             <Typography
                                 component="h3"
@@ -229,27 +330,6 @@ function Profile(props: props): ReactElement {
                         <Grid item xs={6}>
                             <TextField value={profile?.joined} disabled />
                         </Grid>
-                        {/* Profile Picture */}
-
-                        <Grid item xs={6}>
-                            <Typography
-                                component="h3"
-                                variant="h6"
-                                align="center"
-                            >
-                                Profile Picture
-                            </Typography>
-                        </Grid>
-                        <Grid item xs={6}>
-                            <Button variant="contained" component="label">
-                                Upload File
-                                <input
-                                    type="file"
-                                    hidden
-                                    onChange={handleProfilePicChange}
-                                />
-                            </Button>
-                        </Grid>
                         {/* Item 6 */}
                         <Grid item xs={6}>
                             <Typography
@@ -267,7 +347,9 @@ function Profile(props: props): ReactElement {
                                 disabled={!editMode}
                             >
                                 {TIMEZONES.map((zone) => (
-                                    <MenuItem value={zone}>{zone}</MenuItem>
+                                    <MenuItem key={zone} value={zone}>
+                                        {zone}
+                                    </MenuItem>
                                 ))}
                             </Select>
                         </Grid>

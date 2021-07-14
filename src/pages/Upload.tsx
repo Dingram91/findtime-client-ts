@@ -1,42 +1,69 @@
-import React, { ReactElement, useContext, useState } from 'react'
-import { UserContext } from '../contexts/UserContext';
+import React, { ReactElement, useContext, useState, useEffect } from 'react'
+import AvatarImage from '../components/AvatarImage'
+import { UserContext } from '../contexts/UserContext'
+import { getToken } from '../utils/TokenUtils'
 
-interface Props {
-    
-}
+interface Props {}
 
 function Upload({}: Props): ReactElement {
+    const [imageData, setImageData] = useState<File>()
+    const [imageName, setImageName] = useState<string>()
+    // const [imageUrl, setImageUrl] = useState<string>()
+    const { user, setUser } = useContext(UserContext)
 
-    const [imageData, setImageData] = useState<File>();
-    const { user } = useContext(UserContext);
+    // useEffect(() => {
+    //     if (user && setUser) {
+    //         fetch('http://localhost:3000/files/' + imageName, {
+    //             method: 'GET',
+    //             headers: {
+    //                 authToken: getToken(user, setUser),
+    //             },
+    //         })
+    //             .then((response) => {
+    //                 return response.blob()
+    //             })
+    //             .then((blob) => {
+    //                 setImageUrl(URL.createObjectURL(blob))
+    //             })
+    //             .catch((error) => {
+    //                 console.log(error)
+    //             })
+    //     }
+    // }, [imageName])
 
     const imageChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
-        if(event.target.files) {
-            setImageData(event.target.files[0]);
-            console.log("set image");
+        if (event.target.files) {
+            setImageData(event.target.files[0])
+            console.log('set image')
         }
     }
 
     const formSubmitHandler = (event: React.SyntheticEvent) => {
-        event.preventDefault();
+        event.preventDefault()
 
-        const data = new FormData();
+        const data = new FormData()
 
-        data.append('image', imageData!);
+        data.append('image', imageData!)
 
-        fetch('http://localhost:3000/upload', {
-            method: 'POST',
-            headers: {
-                'authToken': user!.token
-            },
-            body: data
-        })
-        .then((result) => {
-            console.log("Sent File Success");
-        })
-        .catch((error) => {
-            console.log("Error sending file");
-        });
+        if (user && setUser) {
+            fetch('http://localhost:3000/files/upload', {
+                method: 'POST',
+                headers: {
+                    authToken: getToken(user, setUser),
+                },
+                body: data,
+            })
+                .then((result) => {
+                    return result.json()
+                })
+                .then((json) => {
+                    console.log('uploaded image named: ' + json.fileName)
+                    setImageName(json.fileName)
+                })
+                .catch((error) => {
+                    console.log('Error sending file')
+                })
+        }
     }
 
     return (
@@ -47,6 +74,7 @@ function Upload({}: Props): ReactElement {
                 <br />
                 <button type="submit">Submit</button>
             </form>
+            <AvatarImage imageName={imageName} alt="User Image" />
         </div>
     )
 }

@@ -10,7 +10,7 @@ const useProfile = () => {
         username: '',
         firstName: '',
         lastName: '',
-        thumbNail: null,
+        thumbNail: '',
         joined: new Date(),
         timeZone: '',
         attending: [],
@@ -23,12 +23,8 @@ const useProfile = () => {
 
     useEffect(() => {
         // if the users auth token is expired refresh it
-        console.log('Checking session expiration')
-        console.dir(user)
         if (checkIfSessionExpired(user!)) {
-            console.log('Session expired!')
             refreshSession(user!, setUser!)
-            console.log('Using token ' + user!.token)
         } else {
             setTimeout(() => {
                 fetch('http://localhost:3000/api/profile', {

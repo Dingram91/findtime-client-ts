@@ -13,7 +13,7 @@ interface ProfileInterface {
     username: string
     firstName: string
     lastName: string
-    thumbNail: File | null
+    thumbNail: string
     joined: Date
     timeZone: string
     attending: string[]

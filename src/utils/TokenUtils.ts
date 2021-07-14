@@ -16,7 +16,7 @@ export const refreshSession = (
     user: IUser,
     setUser: (user: IUser | undefined) => void
 ) => {
-    console.log('Refreshing Session')
+    let token = user.token
     fetch('http://localhost:3000/api/user/refresh', {
         method: 'GET',
         headers: {
@@ -28,13 +28,28 @@ export const refreshSession = (
             return response.json()
         })
         .then((data) => {
+            token = data.authToken
             setUser({
                 token: data.authToken,
                 refresh: data.refreshToken,
             })
         })
         .catch((error) => {
-            console.log('Unable to refresh token')
-            console.log(error.message)
+            console.log(
+                'Error encountered while refreshing token: ' + error.message
+            )
         })
+
+    return token
+}
+
+export const getToken = (
+    user: IUser,
+    setUser: (user: IUser | undefined) => void
+) => {
+    let token = user.token
+    if (checkIfSessionExpired(user)) {
+        token = refreshSession(user, setUser)
+    }
+    return token
 }
